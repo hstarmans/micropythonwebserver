@@ -15,6 +15,7 @@ On Ubuntu you might need,
 ```sudo apt-get install python-is-python3```  
 Build the generic version of MicroPython.
 Place MicroWebSrv2, only the MicroWebSrv2 subfolder, into the modules directory. This is known as a frozen [module](https://learn.adafruit.com/micropython-basics-loading-modules/frozen-modules).
+Also place sdcard.py in the modules directory, located in micropython/drivers.
 Recompile, check the module is cross compiled, erase the flash
 and flash the new binary to the memory.
 
@@ -26,3 +27,8 @@ The flash memory is available as /flash or /pyboard.
 ```repl``` gives you an interactive developer environment with
 the board.
 Esptool can also be used to flash and erase the ESP32. 
+
+# Pinout
+Pinout of the ESP32 can be found [here](https://microcontrollerslab.com/esp32-pinout-use-gpio-pins/).
+Accessing the ports is outlined in the [quickref](https://docs.micropython.org/en/latest/esp32/quickref.html).
+
