@@ -72,7 +72,7 @@ int fpgaResetMaster(struct ff_fpga *fpga) {
 
 int fpgaReset(struct ff_fpga *fpga) {
     // Put the FPGA into reset
-    gpioSetMode(fpga->pins.reset, PI_OUTPUT);
+    //gpioSetMode(fpga->pins.reset, PI_OUTPUT);
     gpioWrite(fpga->pins.reset, 0);
     return 0;
 }
