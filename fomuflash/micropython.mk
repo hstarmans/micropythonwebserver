@@ -1,7 +1,7 @@
 EXAMPLE_MOD_DIR := $(USERMOD_DIR)
 
 # Add all C files to SRC_USERMOD.
-SRC_USERMOD += $(EXAMPLE_MOD_DIR)/examplemodule.c
+SRC_USERMOD += $(EXAMPLE_MOD_DIR)/pythonwrap.c
 # SRC_USERMOD += $(EXAMPLE_MOD_DIR)/fomu-flash.c
 # SRC_USERMOD += $(EXAMPLE_MOD_DIR)/fpga.c
 # SRC_USERMOD += $(EXAMPLE_MOD_DIR)/ice40.c

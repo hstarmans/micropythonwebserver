@@ -30,16 +30,12 @@
 static unsigned int F_RESET = GPIO_NUM_1;  // GPIO 1
 #define F_DONE GPIO_NUM_33  // GPIO 33
 
-int expose() {
-    
-    struct ff_spi *spi;
-    struct ff_fpga *fpga;
+
+
+void initfomu(struct ff_spi *spi, struct ff_fpga *fpga){
     enum spi_type spi_type = ST_SINGLE;
     int spi_flash_bytes = -1;
  
-
-    spi = spiAlloc();
-    fpga = fpgaAlloc();
 
     spiSetPin(spi, SP_CLK, S_CLK);
     spiSetPin(spi, SP_D0, S_D0);
@@ -70,7 +66,55 @@ int expose() {
 
     if (spi_flash_bytes != -1)
         spiOverrideSize(spi, spi_flash_bytes);
+}
 
+
+void releasefomu(struct ff_spi *spi, struct ff_fpga *fpga){
+    spiFree(&spi);
+    fpgaFree(&fpga);    
+}
+
+
+void resetfpga(struct ff_fpga *fpga){
+    printf("resetting fpga\n");
+    fpgaResetMaster(fpga);
+}
+
+
+
+void write_bin(struct ff_spi *spi, const char *op_filename){
+    uint32_t addr = 0;
+    int quiet = 0;
+    int fd;
+    fd = open(op_filename, O_RDONLY);
+    if (fd == -1) {
+        perror("unable to open input file");
+        return;
+    }
+    struct stat stat;
+    if (fstat(fd, &stat) == -1) {
+        perror("unable to get bitstream file size");
+        return;
+    }
+
+    uint8_t *bfr = malloc(stat.st_size);
+    if (!bfr) {
+        perror("unable to alloc memory for buffer");
+        return;
+    }
+    if (read(fd, bfr, stat.st_size) != stat.st_size) {
+        perror("unable to read from file");
+        free(bfr);
+        return;
+    }
+    close(fd);
+    spiWrite(spi, addr, bfr, stat.st_size, quiet);
+}
+
+
+
+
+void memory_id(struct ff_spi *spi) {
     struct spi_id id = spiId(spi);
     printf("Manufacturer ID: %s (%02x)\n", id.manufacturer, id.manufacturer_id);
     if (id.manufacturer_id != id._manufacturer_id)
@@ -85,11 +129,4 @@ int expose() {
     printf("Status 1: %02x\n", spiReadStatus(spi, 1));
     printf("Status 2: %02x\n", spiReadStatus(spi, 2));
     printf("Status 3: %02x\n", spiReadStatus(spi, 3));
-
-    spiFree(&spi);
-    fpgaFree(&fpga);
-
-    int ret = 0;
-
-    return ret;
 }
