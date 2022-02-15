@@ -1,5 +1,6 @@
 // Include MicroPython API.
 #include "py/runtime.h"
+#include "py/builtin.h"
 
 
 #include "spi.h"
@@ -39,16 +40,33 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(reset_fpga_obj, reset_fpga);
 
 // Python call as fomuflash.write_bin
 STATIC mp_obj_t write_binary(mp_obj_t file_name) {
-    mp_uint_t len;
-    const char *p_filename;
-    p_filename = mp_obj_str_get_data(file_name, &len);
-    printf("DEBUG: filename is = %s\n", p_filename);
+    // a typical binary is 100 kb
+    const char *mode = "rb";
+    mp_obj_t mode_obj = mp_obj_new_str(mode, strlen(mode));
+    mp_obj_t args[2] = { file_name, mode_obj };
+    mp_obj_t file = mp_builtin_open(2, args, (mp_map_t *)&mp_const_empty_map);
+    mp_obj_t readinto_fn = mp_load_attr(file, MP_QSTR_readinto);
+    uint32_t num_bytes = 256; // needs to be multiple of 256
+    uint8_t *buf = malloc(num_bytes);
+    mp_obj_t bytearray = mp_obj_new_bytearray_by_ref(num_bytes, buf);
+    mp_int_t bytes_read = 10;
+    mp_int_t address = 0;
+
+    // setup fomu
     struct ff_spi *spi;
     struct ff_fpga *fpga;
     spi = spiAlloc();
     fpga = fpgaAlloc();
     initfomu(spi, fpga);
-    write_bin(spi, p_filename);
+
+    while(bytes_read > 0){
+        bytes_read = mp_obj_get_int(mp_call_function_1(readinto_fn, bytearray));
+        if(bytes_read>0)
+            spiWrite(spi, address, buf, num_bytes, 0);
+        address += bytes_read;
+    }
+
+    // release fomu
     resetfpga(fpga);
     releasefomu(spi, fpga);
     return mp_const_none; 

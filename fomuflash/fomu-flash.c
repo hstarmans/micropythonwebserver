@@ -81,39 +81,6 @@ void resetfpga(struct ff_fpga *fpga){
 }
 
 
-
-void write_bin(struct ff_spi *spi, const char *op_filename){
-    uint32_t addr = 0;
-    int quiet = 0;
-    int fd;
-    fd = open(op_filename, O_RDONLY);
-    if (fd == -1) {
-        perror("unable to open input file");
-        return;
-    }
-    struct stat stat;
-    if (fstat(fd, &stat) == -1) {
-        perror("unable to get bitstream file size");
-        return;
-    }
-
-    uint8_t *bfr = malloc(stat.st_size);
-    if (!bfr) {
-        perror("unable to alloc memory for buffer");
-        return;
-    }
-    if (read(fd, bfr, stat.st_size) != stat.st_size) {
-        perror("unable to read from file");
-        free(bfr);
-        return;
-    }
-    close(fd);
-    spiWrite(spi, addr, bfr, stat.st_size, quiet);
-}
-
-
-
-
 void memory_id(struct ff_spi *spi) {
     struct spi_id id = spiId(spi);
     printf("Manufacturer ID: %s (%02x)\n", id.manufacturer, id.manufacturer_id);
