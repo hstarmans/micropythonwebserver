@@ -1,7 +1,7 @@
 # Micropython wrapper for the Arduino library
 
 TMCStepper library for ESP32 and micropython.
-Compile folliwing the instruction on Micropython main [website](https://docs.micropython.org/en/latest/develop/extendingmicropython.html).
+Compile following the instruction on Micropython main [website](https://docs.micropython.org/en/latest/develop/extendingmicropython.html).
 ```
 make USER_C_MODULES=enter_correct_path_here/TMCStepper/micropython.cmake
 ```

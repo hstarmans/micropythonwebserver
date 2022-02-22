@@ -5,7 +5,7 @@ wide array of commands. Each memory chip can have its own pecularities.
 Fomuflash takes care of a lot of these challenges.
 I therefore ported this library to Micropython using C. I was too lazy to write a pure Python library.
 
-Compile folliwing the instruction on Micropython main [website](https://docs.micropython.org/en/latest/develop/extendingmicropython.html).
+Compile following the instruction on Micropython main [website](https://docs.micropython.org/en/latest/develop/extendingmicropython.html).
 ```
 make USER_C_MODULES=enter_correct_path_here/fomuflash/micropython.cmake
 ```
